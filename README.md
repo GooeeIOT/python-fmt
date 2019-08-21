@@ -41,6 +41,11 @@ ln -sf ${BASE_DIR}/git_hooks/pre-push ${BASE_DIR}/.git/hooks
 
 This is a check only and does not alter your code. Run `pyfmt` to fix.
 
+### Use in a Jenkinsfile
+
+You can add [contrib/jenkins/pyfmt.groovy](contrib/jenkins/pyfmt.groovy) to your Jenkins pipeline
+library to use `pyfmt("paths/to your/code")` in a `Jenkinsfile`.
+
 ## Usage
 
 Be advised with projects in a virutal env: `isort` works best when your virtual env is active.
