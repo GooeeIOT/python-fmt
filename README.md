@@ -1,6 +1,7 @@
 # pyfmt
 
-Python auto formatting using `isort` and `black`.
+Python auto formatting using [isort](https://isort.readthedocs.io/en/latest/) and
+[black](https://black.readthedocs.io/en/latest/).
 
 > The arguments to `isort`/`black` are some-what opinionated, but they are what what works for
 _most_ Python dev teams here at [Gooee](https://gooee.com). Please review and edit
