@@ -31,3 +31,10 @@ You have a few options depending on your preference.
 USAGE: pyfmt [--check] [specific files]
 You may also export BASE_CODE_DIR= to point at the code to be formatted
 ```
+
+* `--check` returns non-zero exist status only and doesn't modify files. This is appropriate for 
+  CI systems where you might want to fail a build if the code is not formatted correctly.
+* if no specific files specified, all files in the current directory and all sub directories where
+  you run the code will be formatted
+* as a matter of convenience, you may set `$BASE_CODE_DIR` in your environment and run the script
+  in the case this is better for your needs
