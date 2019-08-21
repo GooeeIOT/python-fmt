@@ -43,6 +43,11 @@ This is a check only and does not alter your code. Run `pyfmt` to fix.
 
 ## Usage
 
+Be advised with projects in a virutal env: `isort` works best when your virtual env is active.
+Then, imports will sort in the correct way (system packages, 3rd parts packages, local packages).
+If you are not in your virtual env, the global Python environment will be used which might place
+your local package imports in with the 3rd party package imports.
+
 ```shell
 USAGE: pyfmt [--check] [specific files]
 You may also export BASE_CODE_DIR= to point at the code to be formatted
