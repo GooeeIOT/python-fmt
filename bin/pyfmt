@@ -39,7 +39,7 @@ fi
 ## Auto arrange imports
 isort \
     --force-grid-wrap=0 \
-    --line-width=100 \
+    --line-width=${MAX_LINE_LENGTH} \
     --multi-line=3 \
     --use-parentheses \
     --recursive \
