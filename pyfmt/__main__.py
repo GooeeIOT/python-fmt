@@ -1,5 +1,6 @@
 import argparse
 import os
+import sys
 
 import pyfmt
 
@@ -33,18 +34,14 @@ def main():
 
     opts = parser.parse_args()
 
-    if opts.check:
-        opts.extra_isort_args += " --check-only"
-        opts.extra_black_args += " --check"
-
-    isort_output, black_output = pyfmt.pyfmt(
+    exitcode = pyfmt.pyfmt(
         opts.path,
+        check=opts.check,
         line_length=opts.line_length,
         extra_isort_args=opts.extra_isort_args,
         extra_black_args=opts.extra_black_args,
     )
-    print(isort_output)
-    print(black_output)
+    sys.exit(exitcode)
 
 
 if __name__ == "__main__":

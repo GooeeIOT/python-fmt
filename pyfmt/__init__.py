@@ -25,19 +25,24 @@ BLACK_CMD = [
 ]
 
 
-def pyfmt(path, line_length=100, extra_isort_args="", extra_black_args=""):
-    """Run isort and black with the given params and return the results."""
-    isort_output = run_formatter(
+def pyfmt(path, check=False, line_length=100, extra_isort_args="", extra_black_args="") -> int:
+    """Run isort and black with the given params and print the results."""
+    if check:
+        extra_isort_args += " --check-only"
+        extra_black_args += " --check"
+
+    isort_exitcode = run_formatter(
         ISORT_CMD, path, line_length=line_length, extra_isort_args=extra_isort_args
     )
-    black_output = run_formatter(
+    black_exitcode = run_formatter(
         BLACK_CMD, path, line_length=line_length, extra_black_args=extra_black_args
     )
-    return isort_output, black_output
+
+    return isort_exitcode or black_exitcode
 
 
-def run_formatter(cmd, path, **kwargs):
-    """Helper to run a shell command and return prettified output."""
+def run_formatter(cmd, path, **kwargs) -> int:
+    """Helper to run a shell command and print prettified output."""
     cmd = shlex.split(" ".join(cmd).format(path=path, **kwargs))
     result = subprocess.run(cmd, stdout=PIPE, stderr=PIPE)
 
@@ -45,5 +50,8 @@ def run_formatter(cmd, path, **kwargs):
     sep = "\n" + (" " * len(prefix))
     lines = result.stdout.decode().splitlines() + result.stderr.decode().splitlines()
     if "".join(lines) == "":
-        return f"{prefix}Nothing to do!"
-    return f"{prefix}{sep.join(lines)}"
+        print(f"{prefix}Nothing to do!")
+    else:
+        print(f"{prefix}{sep.join(lines)}")
+
+    return result.returncode
