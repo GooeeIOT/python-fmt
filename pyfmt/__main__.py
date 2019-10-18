@@ -37,12 +37,14 @@ def main():
         opts.extra_isort_args += " --check-only"
         opts.extra_black_args += " --check"
 
-    pyfmt.pyfmt(
+    isort_output, black_output = pyfmt.pyfmt(
         opts.path,
         line_length=opts.line_length,
         extra_isort_args=opts.extra_isort_args,
         extra_black_args=opts.extra_black_args,
     )
+    print(isort_output)
+    print(black_output)
 
 
 if __name__ == "__main__":
