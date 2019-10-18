@@ -9,6 +9,11 @@ def readme():
         return handle.read()
 
 
+def requirements():
+    with open(os.path.join(os.path.dirname(__file__), "requirements.txt")) as handle:
+        return handle.readlines()
+
+
 setup(
     name="pyfmt",
     version="1.0.0",
@@ -16,6 +21,7 @@ setup(
     url="https://github.com/GooeeIOT/pyfmt",
     description="Python auto-formatting using isort and black.",
     long_description=readme(),
+    install_requires=requirements(),
     packages=["pyfmt"],
     entry_points={"console_scripts": ["pyfmt = pyfmt.__main__:main"]},
 )
