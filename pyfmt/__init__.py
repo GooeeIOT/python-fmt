@@ -50,7 +50,7 @@ def run_formatter(cmd, path, **kwargs) -> int:
     sep = "\n" + (" " * len(prefix))
     lines = result.stdout.decode().splitlines() + result.stderr.decode().splitlines()
     if "".join(lines) == "":
-        print(f"{prefix}Nothing to do!")
+        print(f"{prefix}No changes.")
     else:
         print(f"{prefix}{sep.join(lines)}")
 
