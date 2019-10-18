@@ -3,11 +3,12 @@ import argparse
 import os
 import shlex
 import sys
-from subprocess import run as run_sh, Popen, PIPE
+from subprocess import PIPE, Popen
+from subprocess import run as run_sh
 
 ISORT_CMD = [
     "isort",
-    "--force-grip-wrap=0",
+    "--force-grid-wrap=0",
     "--line-width={args.line_length}",
     "--multi-line=3",
     "--use-parentheses",
@@ -19,21 +20,20 @@ ISORT_CMD = [
 
 BLACK_CMD = [
     "black",
-    "--line-length {args.line_length}",
-    "--target-version {target_version}",
+    "--line-length={args.line_length}",
+    "--target-version={target_version}",
     "{args.extra_black_args}",
     "{args.PATH}",
 ]
 
+
 def main():
-    parser = argparse.ArgumentParser(
-        prog="pyfmt",
-    )
+    parser = argparse.ArgumentParser(prog="pyfmt")
     parser.add_argument(
         "PATH",
         default=os.getenv("BASE_CODE_DIR", "."),
         help="path to base directory where pyfmt will be run;"
-             " defaults to $BASE_CODE_DIR or the current directory",
+        " defaults to $BASE_CODE_DIR or the current directory",
     )
     parser.add_argument(
         "--check",
@@ -51,22 +51,18 @@ def main():
 
     args = parser.parse_args()
 
+    if args.check:
+        args.extra_isort_args += " --check-only"
+        args.extra_black_args += " --check"
+
     isort_cmd = shlex.split(" ".join(ISORT_CMD).format(args=args))
-    print(" \\ \n    ".join(isort_cmd))
     result = run_sh(isort_cmd, capture_output=True)
-    if result.returncode != 0:
-        print(str(result.stderr))
-    else:
-        print(str(result.stdout))
+    print(f"isort: {result.stdout.decode().strip()}\n")
 
     target_version = f"py{sys.version_info.major}{sys.version_info.minor}"
     black_cmd = shlex.split(" ".join(BLACK_CMD).format(args=args, target_version=target_version))
-    print(" \\ \n    ".join(black_cmd))
-    result = run_sh(shlex.split(black_cmd), capture_output=True)
-    if result.returncode != 0:
-        print(str(result.stderr))
-    else:
-        print(str(result.stdout))
+    result = run_sh(black_cmd, capture_output=True)
+    print("black: {}".format("\n       ".join(result.stderr.decode().splitlines())))
 
 
 if __name__ == "__main__":
