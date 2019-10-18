@@ -56,12 +56,12 @@ def main():
         args.extra_black_args += " --check"
 
     isort_cmd = shlex.split(" ".join(ISORT_CMD).format(args=args))
-    result = run_sh(isort_cmd, capture_output=True)
+    result = run_sh(isort_cmd, stdout=PIPE)
     print(f"isort: {result.stdout.decode().strip()}\n")
 
     target_version = f"py{sys.version_info.major}{sys.version_info.minor}"
     black_cmd = shlex.split(" ".join(BLACK_CMD).format(args=args, target_version=target_version))
-    result = run_sh(black_cmd, capture_output=True)
+    result = run_sh(black_cmd, stderr=PIPE)
     print("black: {}".format("\n       ".join(result.stderr.decode().splitlines())))
 
 
