@@ -44,4 +44,6 @@ def run_formatter(cmd, path, **kwargs):
     prefix = f"{cmd[0]}: "
     sep = "\n" + (" " * len(prefix))
     lines = result.stdout.decode().splitlines() + result.stderr.decode().splitlines()
+    if "".join(lines) == "":
+        return f"{prefix}Nothing to do!"
     return f"{prefix}{sep.join(lines)}"
