@@ -22,6 +22,7 @@ setup(
     description="Python auto-formatting using isort and black.",
     long_description=readme(),
     install_requires=requirements(),
+    include_package_data=True,
     packages=["pyfmt"],
     entry_points={"console_scripts": ["pyfmt = pyfmt.__main__:main"]},
 )
