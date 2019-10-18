@@ -5,21 +5,25 @@ import shlex
 import sys
 from subprocess import run as run_sh, Popen, PIPE
 
-ISORT_CMD = r"""isort \
-    --force-grip-wrap=0 \
-    --line-width={args.line_length} \
-    --multi-line=3 \
-    --use-parentheses \
-    --recursive \
-    --trailing-comma \
-    {args.extra_isort_args} \
-    {args.PATH}"""
+ISORT_CMD = [
+    "isort",
+    "--force-grip-wrap=0",
+    "--line-width={args.line_length}",
+    "--multi-line=3",
+    "--use-parentheses",
+    "--recursive",
+    "--trailing-comma",
+    "{args.extra_isort_args}",
+    "{args.PATH}",
+]
 
-BLACK_CMD = r"""black \
-    --line-length {args.line_length} \
-    --target-version {target_version} \
-    {args.extra_black_args} \
-    {args.PATH}"""
+BLACK_CMD = [
+    "black",
+    "--line-length {args.line_length}",
+    "--target-version {target_version}",
+    "{args.extra_black_args}",
+    "{args.PATH}",
+]
 
 def main():
     parser = argparse.ArgumentParser(
@@ -47,17 +51,17 @@ def main():
 
     args = parser.parse_args()
 
-    isort_cmd = ISORT_CMD.format(args=args)
-    print(isort_cmd)
-    result = run_sh(shlex.split(isort_cmd), capture_output=True)
+    isort_cmd = shlex.split(" ".join(ISORT_CMD).format(args=args))
+    print(" \\ \n    ".join(isort_cmd))
+    result = run_sh(isort_cmd, capture_output=True)
     if result.returncode != 0:
         print(str(result.stderr))
     else:
         print(str(result.stdout))
 
     target_version = f"py{sys.version_info.major}{sys.version_info.minor}"
-    black_cmd = BLACK_CMD.format(args=args, target_version=target_version)
-    print(black_cmd)
+    black_cmd = shlex.split(" ".join(BLACK_CMD).format(args=args, target_version=target_version))
+    print(" \\ \n    ".join(black_cmd))
     result = run_sh(shlex.split(black_cmd), capture_output=True)
     if result.returncode != 0:
         print(str(result.stderr))
