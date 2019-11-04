@@ -26,7 +26,7 @@ python setup.py install
 Prevent a `git push` from completing if `pyfmt --check` returns that there are files that need to still be auto formatted. 
 
 ```console
-ln -sf contrib/git_hooks/pre-push .git/hook
+ln -sf contrib/git_hooks/pre-push .git/hooks
 ```
 
 > This is a check only and does not alter your code. Run `pyfmt` manually to autoformat the code.
