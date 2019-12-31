@@ -18,10 +18,7 @@ git clone https://github.com/GooeeIOT/pyfmt
 cd pyfmt
 
 # Run as a script
-
-```console
 python3 -m pyfmt
-```
 
 # Install the pyfmt utility in PATH
 python setup.py install
