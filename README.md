@@ -5,6 +5,12 @@ Python auto-formatting using [isort](https://isort.readthedocs.io/en/latest/) an
 
 ## Installation
 
+### Locally
+
+```console
+python3 -m pyfmt --help
+```
+
 ### Using pip
 
 ```console
@@ -16,7 +22,18 @@ pip3 install git+https://github.com/GooeeIOT/pyfmt.git
 ```console
 git clone https://github.com/GooeeIOT/pyfmt
 cd pyfmt
+
+# Run as a script
+
+```console
+python3 -m pyfmt
+```
+
+# Install the pyfmt utility in PATH
 python setup.py install
+
+# Like `install` + Allows code changes to propagate to the installed package
+python setup.py develop
 ```
 
 ## Contrib
