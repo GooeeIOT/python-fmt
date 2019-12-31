@@ -5,12 +5,6 @@ Python auto-formatting using [isort](https://isort.readthedocs.io/en/latest/) an
 
 ## Installation
 
-### Locally
-
-```console
-python3 -m pyfmt --help
-```
-
 ### Using pip
 
 ```console
