@@ -44,9 +44,11 @@ If you are not in your virtual env, the global Python environment will be used w
 your local package imports in with the 3rd party package imports.
 
 ```console
-usage: pyfmt [-h] [--check] [--line-length LINE_LENGTH]
+usage: pyfmt [-h] [--black-only] [--check] [--isort-only]
              [--extra-isort-args EXTRA_ISORT_ARGS]
              [--extra-black-args EXTRA_BLACK_ARGS]
+             [--line-length LINE_LENGTH]
+             [--skip]
              [PATH]
 
 positional arguments:
@@ -57,6 +59,10 @@ optional arguments:
   -h, --help            show this help message and exit
   --check               don't write changes, just print the files that would
                         be formatted
+  --black-only          Only process with black (code only)
+  --isort-only          Only process with isort (imports only)
+  --skip SKIP           Directory (ie. env/foo) or files (ie. cool.py) to skip
+                        Arguments are seperated by comma (ie. env,kung.py,foo.py)
   --line-length LINE_LENGTH
                         max characters per line; defaults to $MAX_LINE_LENGTH
                         or 100
@@ -73,3 +79,7 @@ optional arguments:
   you run the code will be formatted.
 * As a matter of convenience, you may set `$BASE_CODE_DIR` in your environment and run the script
   in the case this is better for your needs.
+* `--skip` directory names must be relative to current directory. For example, if the current directory
+  contains the directory `env/bin`, this entire directory can be skipped with `--skip=env/bin`
+* `--skip` file names can not include the directory names, only file names are allowed. For example, 
+  if there is file name "foo/bar/yo.py", it is skipped by `--skip=yo.py`
