@@ -29,7 +29,7 @@ def main():
         default=DEFAULT_LINE_LENGTH,
         help="max characters per line; defaults to $MAX_LINE_LENGTH or 100",
     )
-    parser.add_argument_group(
+    parser.add_argument(
         "--all", action="store_true", help="if specified, run pyfmt on all files in the repo"
     )
     parser.add_argument("--extra-isort-args", default="", help="additional args to pass to isort")

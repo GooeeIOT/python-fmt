@@ -40,7 +40,7 @@ def pyfmt(
             text=True,
             check=True,
         ).stdout
-        files = [line.split()[1] for line in output.split()]
+        files = [line.split()[1] for line in output.splitlines() if line.endswith(".py")]
         path = " ".join(files)
         print(f"files={files}")
 
