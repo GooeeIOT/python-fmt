@@ -25,11 +25,24 @@ BLACK_CMD = [
 ]
 
 
-def pyfmt(path, check=False, line_length=100, extra_isort_args="", extra_black_args="") -> int:
+def pyfmt(
+    path, check=False, line_length=100, all_files=False, extra_isort_args="", extra_black_args=""
+) -> int:
     """Run isort and black with the given params and print the results."""
     if check:
         extra_isort_args += " --check-only"
         extra_black_args += " --check"
+
+    if not all_files:
+        output = subprocess.run(
+            ("git", "status", "--porcelain", "--untracked-files=no", path),
+            stdout=subprocess.PIPE,
+            text=True,
+            check=True,
+        ).stdout
+        files = [line.split()[1] for line in output.split()]
+        path = " ".join(files)
+        print(f"files={files}")
 
     isort_exitcode = run_formatter(
         ISORT_CMD, path, line_length=line_length, extra_isort_args=extra_isort_args
