@@ -40,9 +40,8 @@ def pyfmt(
             text=True,
             check=True,
         ).stdout
-        files = [line.split()[1] for line in output.splitlines() if line.endswith(".py")]
-        path = " ".join(files)
-        print(f"files={files}")
+        path = " ".join(line.split()[1] for line in output.splitlines() if line.endswith(".py"))
+        print(f"path={path}")
 
     isort_exitcode = run_formatter(
         ISORT_CMD, path, line_length=line_length, extra_isort_args=extra_isort_args
