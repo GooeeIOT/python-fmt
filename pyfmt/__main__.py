@@ -1,11 +1,21 @@
 import argparse
 import os
 import sys
+from collections import OrderedDict
 
 import pyfmt
 
 DEFAULT_PATH = os.getenv("BASE_CODE_DIR", ".")
 DEFAULT_LINE_LENGTH = int(os.getenv("MAX_LINE_LENGTH", "100"))
+
+SELECT_CHOICES = OrderedDict(
+    (
+        ("staged", "files in the index"),
+        ("modified", "files in the index, working tree, and untracked files"),
+        ("head", "files in HEAD"),
+        ("all", "(default) all files"),
+    )
+)
 
 
 def main():
