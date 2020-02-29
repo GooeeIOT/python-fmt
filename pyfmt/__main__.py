@@ -46,8 +46,6 @@ def main():
         action="store_true",
         help="don't write changes, just print the files that would be formatted",
     )
-    # group = parser.add_mutually_exclusive_group()
-    # group.add_argument("--commit", action="store_true", help="commit files that were subjected to formatting")
     parser.add_choices_argument(
         "--commit",
         choices=COMMIT_CHOICES,

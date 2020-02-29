@@ -59,7 +59,7 @@ class FormattedHelpArgumentParser(argparse.ArgumentParser):
 
         # Generate help text for choices.
         prefix = "> "
-        max_choice_len = max(len(choice) for choice in choices.keys()) + 1
+        max_choice_len = max(len(choice) for choice in choices.keys()) + 2
         choice_width = round_up_to(max_choice_len, 2)
         choice_help_width = HELP_WIDTH - choice_width - len(prefix)
         choice_help_indent = " " * (choice_width + len(prefix))
@@ -76,7 +76,7 @@ class FormattedHelpArgumentParser(argparse.ArgumentParser):
         )
 
         # Format final help text.
-        help_text = "{}:\n\n{}".format(
+        help_text = "{}:\n{}".format(
             self._fill(kwargs.pop("help", "choices").rstrip(",.:;")), choices_help
         )
         return super().add_argument(*name_or_flags, choices=choices, help=help_text, **kwargs)
