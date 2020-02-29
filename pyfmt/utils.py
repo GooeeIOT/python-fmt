@@ -51,23 +51,27 @@ class FormattedHelpArgumentParser(argparse.ArgumentParser):
             elif "default" not in kwargs:
                 raise ValueError(f"`envvar` ${envvar} not found, and no `default` was given")
 
+        # Add default to help text.
         help_text = kwargs.get("help")
         if help_text:
-            # Add default to help text if given and not already in help text.
             default = kwargs.get("default")
-            has_default = default and default is not argparse.SUPPRESS
-            if (envvar or has_default) and "%(default)" not in help_text:
-                if envvar:
-                    if has_default:
-                        default_str = f"${envvar} or {default!r}"
-                    else:
-                        default_str = f"${envvar}"
+
+            default_list = []
+            if envvar:
+                default_list.append(f"${envvar}")
+            if default and default is not argparse.SUPPRESS:
+                default_list.append(f"{default!r}")
+
+            if default_list:
+                default_str = " | ".join(default_list)
+                if "%(default)" in help_text:
+                    help_text = help_text % {"default": default_str}
                 else:
-                    default_str = f"{default!r}"
-                help_text += f" (default: ${default_str})"
+                    help_text += f" (default: {default_str})"
 
             # Wrap help text.
             kwargs["help"] = self._fill(help_text)
+
         return super().add_argument(*name_or_flags, **kwargs)
 
     def add_choices_argument(self, *name_or_flags: str, choices: Mapping[str, str], **kwargs):
