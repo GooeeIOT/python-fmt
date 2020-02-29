@@ -1,25 +1,24 @@
-import argparse
 import os
 import sys
-from collections import OrderedDict
 
 import pyfmt
+
+from .utils import FormattedHelpArgumentParser
 
 DEFAULT_PATH = os.getenv("BASE_CODE_DIR", ".")
 DEFAULT_LINE_LENGTH = int(os.getenv("MAX_LINE_LENGTH", "100"))
 
-SELECT_CHOICES = OrderedDict(
-    (
-        ("staged", "files in the index"),
-        ("modified", "files in the index, working tree, and untracked files"),
-        ("head", "files in HEAD"),
-        ("all", "(default) all files"),
-    )
-)
+SELECT_CHOICES = {
+    "staged": "files in the index",
+    "modified": "files in the index, working tree, and untracked files",
+    "head": "files changed in HEAD",
+    "local": "files changed locally but not upstream",
+    "all": "all files",
+}
 
 
 def main():
-    parser = argparse.ArgumentParser(prog="pyfmt")
+    parser = FormattedHelpArgumentParser(prog="pyfmt")
     parser.add_argument(
         "path",
         nargs="?",
@@ -39,8 +38,11 @@ def main():
         default=DEFAULT_LINE_LENGTH,
         help="max characters per line; defaults to $MAX_LINE_LENGTH or 100",
     )
-    parser.add_argument(
-        "--all", action="store_true", help="if specified, run pyfmt on all files in the repo"
+    parser.add_choices_argument(
+        "--select",
+        choices=SELECT_CHOICES,
+        default="all",
+        help="filter which files to format in PATH:",
     )
     parser.add_argument("--extra-isort-args", default="", help="additional args to pass to isort")
     parser.add_argument("--extra-black-args", default="", help="additional args to pass to black")
@@ -51,7 +53,7 @@ def main():
         opts.path,
         check=opts.check,
         line_length=opts.line_length,
-        all_files=opts.all,
+        all_files=False,
         extra_isort_args=opts.extra_isort_args,
         extra_black_args=opts.extra_black_args,
     )
