@@ -1,12 +1,8 @@
-import os
 import sys
 
 import pyfmt
 
 from .utils import FormattedHelpArgumentParser
-
-DEFAULT_PATH = os.getenv("BASE_CODE_DIR", ".")
-DEFAULT_LINE_LENGTH = int(os.getenv("MAX_LINE_LENGTH", "100"))
 
 SELECT_CHOICES = {
     "staged": "files in the index",
@@ -28,7 +24,8 @@ def main():
     parser.add_argument(
         "path",
         nargs="?",
-        default=DEFAULT_PATH,
+        envvar="BASE_CODE_DIR",
+        default=".",
         metavar="PATH",
         help="path to base directory where pyfmt will be run;"
         " defaults to $BASE_CODE_DIR or the current directory",
@@ -49,7 +46,8 @@ def main():
     parser.add_argument(
         "--line-length",
         type=int,
-        default=DEFAULT_LINE_LENGTH,
+        envvar="MAX_LINE_LENGTH",
+        default="100",
         help="max characters per line; defaults to $MAX_LINE_LENGTH or 100",
     )
     parser.add_choices_argument(

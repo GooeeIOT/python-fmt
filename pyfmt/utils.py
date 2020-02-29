@@ -1,7 +1,8 @@
 import argparse
 import math
+import os
 import textwrap
-from typing import Mapping
+from typing import Mapping, Optional
 
 HELP_WIDTH = 55
 
@@ -30,8 +31,26 @@ class FormattedHelpArgumentParser(argparse.ArgumentParser):
         """Calls ``textwrap.fill`` with a default width of ``HELP_WIDTH``."""
         return textwrap.fill(text, width=width, **kwargs)
 
-    def add_argument(self, *name_or_flags: str, **kwargs):
-        """Wrap ``help`` text since we're using ``argparse.RawTextHelpFormatter``."""
+    def add_argument(self, *name_or_flags: str, envvar: Optional[str] = None, **kwargs):
+        """Adds some functionality to ``add_argument``.
+
+        - Optionally take an environment variable as a default.
+        - Add any default to the help text.
+        - Wrap ``help`` (``argparse.RawTextHelpFormatter`` doesn't auto-wrap help text).
+
+        :param envvar:
+            Name of an environment variable to use as the default value. If a ``default`` is also
+            given, it will be used as a fallback if the env var isn't set. If no ``default`` is
+            given _and_ the env var isn't set, a ValueError will be raised.
+         """
+        if envvar:
+            default = os.getenv(envvar)
+            if not default:
+                if "default" not in kwargs:
+                    raise ValueError(f"`envvar` ${envvar} not found, and no `default` was given")
+                default = kwargs["default"]
+            kwargs["default"] = default
+
         help_text = kwargs.get("help")
         if help_text:
             # Add default to help text if given and not already in help text.
