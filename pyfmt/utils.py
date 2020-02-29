@@ -25,7 +25,8 @@ class FormattedHelpArgumentParser(argparse.ArgumentParser):
         kwargs.setdefault("formatter_class", argparse.RawTextHelpFormatter)
         super().__init__(*args, **kwargs)
 
-    def _fill(self, text: str, width=HELP_WIDTH, **kwargs):
+    @staticmethod
+    def _fill(text: str, width=HELP_WIDTH, **kwargs):
         """Calls ``textwrap.fill`` with a default width of ``HELP_WIDTH``."""
         return textwrap.fill(text, width=width, **kwargs)
 

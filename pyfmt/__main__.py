@@ -17,9 +17,9 @@ SELECT_CHOICES = {
 }
 
 COMMIT_CHOICES = {
-    "no": "do not commit changes",
-    "yes": "call `git commit -a` on changes",
-    "amend": "call `git commit -a --amend` on changes",
+    "message": "commit changed files with a message",
+    "patch": "commit changed files with --patch",
+    "amend": "commit changed files with --amend",
 }
 
 
@@ -46,31 +46,32 @@ def main():
         action="store_true",
         help="don't write changes, just print the files that would be formatted",
     )
-    parser.add_choices_argument(
-        "--commit",
-        choices=COMMIT_CHOICES,
-        default="no",
-        help="commit changes if any files were formatted",
-    )
     parser.add_argument(
         "--line-length",
         type=int,
         default=DEFAULT_LINE_LENGTH,
         help="max characters per line; defaults to $MAX_LINE_LENGTH or 100",
     )
+    parser.add_choices_argument(
+        "--commit", choices=COMMIT_CHOICES, help="commit changes if any files were formatted"
+    )
+    parser.add_argument(
+        "--commit-message",
+        help="if --commit=message, this is used as the commit message"
+        " (WARNING: this will auto-commit any changes!)",
+    )
     parser.add_argument("--extra-isort-args", default="", help="additional args to pass to isort")
     parser.add_argument("--extra-black-args", default="", help="additional args to pass to black")
 
     opts = parser.parse_args()
-    if opts.commit == "no":
-        opts.commit = None
 
     exitcode = pyfmt.pyfmt(
         opts.path,
         opts.select,
         check=opts.check,
-        commit=opts.commit,
         line_length=opts.line_length,
+        commit=opts.commit,
+        commit_message=opts.commit_message,
         extra_isort_args=opts.extra_isort_args,
         extra_black_args=opts.extra_black_args,
     )

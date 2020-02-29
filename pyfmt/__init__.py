@@ -40,9 +40,10 @@ SELECTOR_MAP = {
 def pyfmt(
     path,
     selector,
+    line_length=100,
     check=False,
     commit=None,
-    line_length=100,
+    commit_message=None,
     extra_isort_args="",
     extra_black_args="",
 ) -> int:
@@ -66,10 +67,15 @@ def pyfmt(
     )
     exitcode = isort_exitcode or black_exitcode
 
-    if not exitcode and commit:
+    if not exitcode and not check and commit:
         files = {line.split()[-1] for line in isort_lines + black_lines}
         cmd = ["git", "commit"]
-        if commit == "amend":
+        if commit == "message":
+            if commit_message:
+                cmd.extend(("--message", commit_message))
+        elif commit == "patch":
+            cmd.append("--patch")
+        elif commit == "amend":
             cmd.append("--amend")
         cmd.extend(files)
         subprocess.run(cmd)
