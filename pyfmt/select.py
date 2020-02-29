@@ -27,7 +27,11 @@ def select_all(path: str) -> Iterator[str]:
 
 @dataclass
 class GitStatusCode:
+    """Wrapper around the 2-character status codes returned by ``git status --porcelain``."""
+
+    # The first character, representing the file's status in the index.
     index: str
+    # The second character, representing the file's status in the working tree.
     work_tree: str
 
     def index_has_changes(self) -> bool:
@@ -47,6 +51,7 @@ class GitStatusCode:
 
 
 def _iter_changed(path) -> Iterator[Tuple[GitStatusCode, str]]:
+    """Iterate over .py files in the index and working tree that aren't deleted."""
     output = _sh("git", "status", "--porcelain", path)
     for line in output.splitlines():
         xy, line = line[:2], line[2:].strip()
@@ -59,8 +64,9 @@ def _iter_changed(path) -> Iterator[Tuple[GitStatusCode, str]]:
             yield code, file
 
 
-def _iter_committed(path, refspec) -> Iterator[str]:
-    output = _sh("git", "--no-pager", "diff", "--numstat", refspec, "--", path)
+def _iter_committed(path: str, commits: str) -> Iterator[str]:
+    """Iterate over .py files in the given commit ("x") or range ("x..y")."""
+    output = _sh("git", "--no-pager", "diff", "--numstat", commits, "--", path)
     for line in output.splitlines():
         file = line.strip().rsplit(maxsplit=1)[-1]
         if file.endswith(".py"):
