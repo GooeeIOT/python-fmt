@@ -27,6 +27,12 @@ def main():
         help="path to base directory where pyfmt will be run;"
         " defaults to $BASE_CODE_DIR or the current directory",
     )
+    parser.add_choices_argument(
+        "--select",
+        choices=SELECT_CHOICES,
+        default="all",
+        help="filter which files to format in PATH:",
+    )
     parser.add_argument(
         "--check",
         action="store_true",
@@ -38,12 +44,6 @@ def main():
         default=DEFAULT_LINE_LENGTH,
         help="max characters per line; defaults to $MAX_LINE_LENGTH or 100",
     )
-    parser.add_choices_argument(
-        "--select",
-        choices=SELECT_CHOICES,
-        default="all",
-        help="filter which files to format in PATH:",
-    )
     parser.add_argument("--extra-isort-args", default="", help="additional args to pass to isort")
     parser.add_argument("--extra-black-args", default="", help="additional args to pass to black")
 
@@ -51,9 +51,9 @@ def main():
 
     exitcode = pyfmt.pyfmt(
         opts.path,
+        select=opts.select,
         check=opts.check,
         line_length=opts.line_length,
-        all_files=False,
         extra_isort_args=opts.extra_isort_args,
         extra_black_args=opts.extra_black_args,
     )
