@@ -1,0 +1,9 @@
+#!/bin/sh
+
+echo "Auto formatting code..."
+if ! pyfmt --check --select staged; then
+    echo
+    echo "There are some code format issues!"
+    echo "Please run 'pyfmt' and review before pushing."
+    exit 1
+fi
