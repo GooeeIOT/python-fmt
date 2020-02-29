@@ -4,7 +4,7 @@ remote="$1"
 url="$2"
 
 echo "Auto formatting code..."
-if ! pyfmt --check; then
+if ! pyfmt --check --select local; then
     echo
     echo "There are some code format issues!"
     echo "Please run 'pyfmt' and review before pushing."
