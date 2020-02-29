@@ -43,22 +43,19 @@ class FormattedHelpArgumentParser(argparse.ArgumentParser):
             given, it will be used as a fallback if the env var isn't set. If no ``default`` is
             given _and_ the env var isn't set, a ValueError will be raised.
         """
-        default = kwargs.get("default")
-        has_default = default and default is not argparse.SUPPRESS
         if envvar:
             val = os.getenv(envvar)
             if val:
                 type_func = kwargs.get("type") or str
                 kwargs["default"] = type_func(val)
-            else:
-                if "default" not in kwargs:
-                    raise ValueError(f"`envvar` ${envvar} not found, and no `default` was given")
-                if has_default:
-                    kwargs["default"] = val
+            elif "default" not in kwargs:
+                raise ValueError(f"`envvar` ${envvar} not found, and no `default` was given")
 
         help_text = kwargs.get("help")
         if help_text:
             # Add default to help text if given and not already in help text.
+            default = kwargs.get("default")
+            has_default = default and default is not argparse.SUPPRESS
             if (envvar or has_default) and "%(default)" not in help_text:
                 if envvar:
                     if has_default:
