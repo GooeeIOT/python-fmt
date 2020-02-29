@@ -3,9 +3,10 @@ import subprocess
 import sys
 from subprocess import PIPE
 
-from .select import SELECTORS
+from . import select
 
 TARGET_VERSION = f"py{sys.version_info.major}{sys.version_info.minor}"
+
 
 ISORT_CMD = [
     "isort",
@@ -26,12 +27,20 @@ BLACK_CMD = [
     "{path}",
 ]
 
+SELECTOR_MAP = {
+    "staged": select.select_staged,
+    "modified": select.select_modified,
+    "head": select.select_head,
+    "local": select.select_local,
+    "all": select.select_all,
+}
+
 
 def pyfmt(
     path, selector, check=False, line_length=100, extra_isort_args="", extra_black_args=""
 ) -> int:
     """Run isort and black with the given params and print the results."""
-    select_files = SELECTORS[selector]
+    select_files = SELECTOR_MAP[selector]
     path = " ".join(select_files(path))
     if not path:
         print("Nothing to do.")
