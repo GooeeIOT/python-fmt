@@ -52,7 +52,7 @@ def pyfmt(
     select_files = SELECTOR_MAP[selector]
     path = " ".join(select_files(path))
     if not path:
-        print("Nothing to do.")
+        print("No files need formatting.")
         return 0
 
     if check:
