@@ -2,7 +2,7 @@ import shlex
 import subprocess
 import sys
 from subprocess import PIPE
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from . import select
 
@@ -38,19 +38,19 @@ SELECTOR_MAP = {
 
 
 def pyfmt(
-    path,
-    selector,
-    line_length=100,
-    check=False,
-    commit=None,
-    commit_message=None,
-    extra_isort_args="",
-    extra_black_args="",
+    path: str,
+    selector: str = "all",
+    line_length: int = 100,
+    check: bool = False,
+    commit: Optional[str] = None,
+    commit_message: str = "",
+    extra_isort_args: str = "",
+    extra_black_args: str = "",
 ) -> int:
     """Run isort and black with the given params and print the results."""
+    # Filter path according to given ``selector``.
     select_files = SELECTOR_MAP[selector]
-    files = list(select_files(path))
-    path = " ".join(files)
+    path = " ".join(select_files(path))
     if not path:
         print("Nothing to do.")
         return 0
@@ -59,6 +59,7 @@ def pyfmt(
         extra_isort_args += " --check-only"
         extra_black_args += " --check"
 
+    # Run isort and black.
     isort_lines, isort_exitcode = run_formatter(
         ISORT_CMD, path, line_length=line_length, extra_isort_args=extra_isort_args
     )
@@ -67,17 +68,27 @@ def pyfmt(
     )
     exitcode = isort_exitcode or black_exitcode
 
-    if not exitcode and not check and commit:
+    # Commit changes if successful.
+    if not exitcode and not check and commit is not None:
+        # Get changed files from isort/black output.
         files = {line.split()[-1] for line in isort_lines + black_lines}
         cmd = ["git", "commit"]
-        if commit == "message":
-            if commit_message:
-                cmd.extend(("--message", commit_message))
-        elif commit == "patch":
+
+        # Apply args.
+        if "all" in commit:
+            cmd.append("--all")
+        if "patch" in commit:
             cmd.append("--patch")
-        elif commit == "amend":
+        if "amend" in commit:
             cmd.append("--amend")
+
+        # Add commit message if given.
+        if commit_message:
+            cmd.extend(("--message", commit_message))
+
+        # Add files.
         cmd.extend(files)
+
         subprocess.run(cmd)
 
     return exitcode

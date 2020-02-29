@@ -17,9 +17,9 @@ SELECT_CHOICES = {
 }
 
 COMMIT_CHOICES = {
-    "message": "commit changed files with a message",
-    "patch": "commit changed files with --patch",
-    "amend": "commit changed files with --amend",
+    "all": "commit all files in tree, whether or not they were formatted",
+    "patch": "commit formatted files with --patch",
+    "amend": "commit formatted files with --amend",
 }
 
 
@@ -53,10 +53,14 @@ def main():
         help="max characters per line; defaults to $MAX_LINE_LENGTH or 100",
     )
     parser.add_choices_argument(
-        "--commit", choices=COMMIT_CHOICES, help="commit changes if any files were formatted"
+        "--commit",
+        choices=COMMIT_CHOICES,
+        nargs="*",
+        help="commit changes if any files were formatted",
     )
     parser.add_argument(
         "--commit-message",
+        default="",
         help="if --commit=message, this is used as the commit message"
         " (WARNING: this will auto-commit any changes!)",
     )
