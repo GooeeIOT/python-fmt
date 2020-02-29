@@ -2,6 +2,7 @@ import shlex
 import subprocess
 import sys
 from subprocess import PIPE
+from typing import List, Tuple
 
 from . import select
 
@@ -57,34 +58,41 @@ def pyfmt(
         extra_isort_args += " --check-only"
         extra_black_args += " --check"
 
-    isort_exitcode = run_formatter(
+    isort_lines, isort_exitcode = run_formatter(
         ISORT_CMD, path, line_length=line_length, extra_isort_args=extra_isort_args
     )
-    black_exitcode = run_formatter(
+    black_lines, black_exitcode = run_formatter(
         BLACK_CMD, path, line_length=line_length, extra_black_args=extra_black_args
     )
+    exitcode = isort_exitcode or black_exitcode
 
-    if commit:
+    if not exitcode and commit:
+        files = {line.split()[-1] for line in isort_lines + black_lines}
         cmd = ["git", "commit"]
         if commit == "amend":
             cmd.append("--amend")
         cmd.extend(files)
         subprocess.run(cmd)
 
-    return isort_exitcode or black_exitcode
+    return exitcode
 
 
-def run_formatter(cmd, path, **kwargs) -> int:
+def run_formatter(cmd, path, **kwargs) -> Tuple[List[str], int]:
     """Helper to run a shell command and print prettified output."""
     cmd = shlex.split(" ".join(cmd).format(path=path, **kwargs))
     result = subprocess.run(cmd, stdout=PIPE, stderr=PIPE, text=True)
 
     prefix = f"{cmd[0]}: "
     sep = "\n" + (" " * len(prefix))
-    lines = result.stdout.splitlines() + result.stderr.splitlines()
+    lines = result.stderr.splitlines()
+
+    # Remove fluff from black's output.
+    if cmd[0] == "black" and result.returncode == 0:
+        lines = lines[:-2]
+
     if "".join(lines) == "":
         print(f"{prefix}No changes.")
     else:
         print(f"{prefix}{sep.join(lines)}")
 
-    return result.returncode
+    return lines, result.returncode
