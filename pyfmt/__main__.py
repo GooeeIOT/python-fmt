@@ -51,7 +51,7 @@ def main():
 
     exitcode = pyfmt.pyfmt(
         opts.path,
-        select=opts.select,
+        opts.select,
         check=opts.check,
         line_length=opts.line_length,
         extra_isort_args=opts.extra_isort_args,

@@ -3,6 +3,8 @@ import subprocess
 import sys
 from subprocess import PIPE
 
+from .select import SELECTORS
+
 TARGET_VERSION = f"py{sys.version_info.major}{sys.version_info.minor}"
 
 ISORT_CMD = [
@@ -25,67 +27,12 @@ BLACK_CMD = [
 ]
 
 
-class SELECTORS:
-    """Container for selector functions."""
-
-    @classmethod
-    def select(cls, selector: str, path: str) -> str:
-        return getattr(cls, selector)(path)
-
-    @classmethod
-    def staged(cls, path: str) -> str:
-        return " ".join(file for code, file in cls._iter_changed(path) if code[0] in "MARC")
-
-    @classmethod
-    def modified(cls, path: str) -> str:
-        return " ".join(
-            file
-            for code, file in cls._iter_changed(path)
-            if "D" not in code and (code[0] in "MARC" or code[1] in "MARC" or code == "??")
-        )
-
-    @classmethod
-    def head(cls, path: str) -> str:
-        return " ".join(cls._iter_committed(path, "HEAD^1..HEAD"))
-
-    @classmethod
-    def local(cls, path: str) -> str:
-        return " ".join(cls._iter_committed(path, "@{upstream}.."))
-
-    @classmethod
-    def all(cls, path: str) -> str:
-        return path
-
-    @classmethod
-    def _iter_changed(cls, path):
-        output = cls._sh("git", "status", "--porcelain", path)
-        for line in output.splitlines():
-            code, line = line[:2], line[2:].strip()
-            if code[0] == "R":
-                _, _, file = line.split()
-            else:
-                file = line.strip()
-            if code[1] != "D" and file.endswith(".py"):
-                yield code, file
-
-    @classmethod
-    def _iter_committed(cls, path, refspec):
-        output = cls._sh("git", "--no-pager", "diff", "--numstat", refspec, "--", path)
-        for line in output.splitlines():
-            file = line.strip().rsplit(maxsplit=1)[-1]
-            if file.endswith(".py"):
-                yield file
-
-    @classmethod
-    def _sh(cls, *args):
-        return subprocess.run(args, stdout=subprocess.PIPE, text=True, check=True).stdout
-
-
 def pyfmt(
-    path, select, check=False, line_length=100, extra_isort_args="", extra_black_args=""
+    path, selector, check=False, line_length=100, extra_isort_args="", extra_black_args=""
 ) -> int:
     """Run isort and black with the given params and print the results."""
-    path = SELECTORS.select(select, path)
+    select_files = SELECTORS[selector]
+    path = " ".join(select_files(path))
     if not path:
         print("Nothing to do.")
         return 0
