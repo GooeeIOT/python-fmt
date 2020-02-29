@@ -70,24 +70,23 @@ def pyfmt(
 
     # Commit changes if successful.
     if not exitcode and not check and commit is not None:
-        # Get changed files from isort/black output.
-        files = {line.split()[-1] for line in isort_lines + black_lines}
         cmd = ["git", "commit"]
 
-        # Apply args.
-        if "all" in commit:
-            cmd.append("--all")
         if "patch" in commit:
             cmd.append("--patch")
         if "amend" in commit:
             cmd.append("--amend")
 
+        # Apply `--all` if given, otherwise get all files changed from isort/black output.
+        if "all" in commit:
+            cmd.append("--all")
+        else:
+            files = {line.split()[-1] for line in isort_lines + black_lines}
+            cmd.extend(files)
+
         # Add commit message if given.
         if commit_message:
             cmd.extend(("--message", commit_message))
-
-        # Add files.
-        cmd.extend(files)
 
         subprocess.run(cmd)
 
