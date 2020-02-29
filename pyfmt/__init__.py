@@ -169,7 +169,6 @@ def pyfmt(
 ) -> int:
     """Run isort and black with the given params and print the results."""
     path = SELECTORS.select(select, path)
-    print(path)
     if not path:
         print("Nothing to do.")
         return 0
