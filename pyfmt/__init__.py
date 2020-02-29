@@ -37,11 +37,18 @@ SELECTOR_MAP = {
 
 
 def pyfmt(
-    path, selector, check=False, line_length=100, extra_isort_args="", extra_black_args=""
+    path,
+    selector,
+    check=False,
+    commit=None,
+    line_length=100,
+    extra_isort_args="",
+    extra_black_args="",
 ) -> int:
     """Run isort and black with the given params and print the results."""
     select_files = SELECTOR_MAP[selector]
-    path = " ".join(select_files(path))
+    files = list(select_files(path))
+    path = " ".join(files)
     if not path:
         print("Nothing to do.")
         return 0
@@ -57,17 +64,24 @@ def pyfmt(
         BLACK_CMD, path, line_length=line_length, extra_black_args=extra_black_args
     )
 
+    if commit:
+        cmd = ["git", "commit"]
+        if commit == "amend":
+            cmd.append("--amend")
+        cmd.extend(files)
+        subprocess.run(cmd)
+
     return isort_exitcode or black_exitcode
 
 
 def run_formatter(cmd, path, **kwargs) -> int:
     """Helper to run a shell command and print prettified output."""
     cmd = shlex.split(" ".join(cmd).format(path=path, **kwargs))
-    result = subprocess.run(cmd, stdout=PIPE, stderr=PIPE)
+    result = subprocess.run(cmd, stdout=PIPE, stderr=PIPE, text=True)
 
     prefix = f"{cmd[0]}: "
     sep = "\n" + (" " * len(prefix))
-    lines = result.stdout.decode().splitlines() + result.stderr.decode().splitlines()
+    lines = result.stdout.splitlines() + result.stderr.splitlines()
     if "".join(lines) == "":
         print(f"{prefix}No changes.")
     else:
