@@ -42,16 +42,16 @@ def pyfmt(
     selector: str = "all",
     line_length: int = 100,
     check: bool = False,
-    commit: Optional[str] = None,
-    commit_message: str = "",
+    commit: Optional[List[str]] = None,
+    commit_msg: Optional[str] = None,
     extra_isort_args: str = "",
     extra_black_args: str = "",
 ) -> int:
     """Run isort and black with the given params and print the results."""
     # Filter path according to given ``selector``.
     select_files = SELECTOR_MAP[selector]
-    path = " ".join(select_files(path))
-    if not path:
+    files = tuple(select_files(path))
+    if not files:
         print("No files need formatting.")
         return 0
 
@@ -60,11 +60,12 @@ def pyfmt(
         extra_black_args += " --check"
 
     # Run isort and black.
+    files_str = " ".join(files)
     isort_lines, isort_exitcode = run_formatter(
-        ISORT_CMD, path, line_length=line_length, extra_isort_args=extra_isort_args
+        ISORT_CMD, files_str, line_length=line_length, extra_isort_args=extra_isort_args
     )
     black_lines, black_exitcode = run_formatter(
-        BLACK_CMD, path, line_length=line_length, extra_black_args=extra_black_args
+        BLACK_CMD, files_str, line_length=line_length, extra_black_args=extra_black_args
     )
     exitcode = isort_exitcode or black_exitcode
 
@@ -77,16 +78,24 @@ def pyfmt(
         if "amend" in commit:
             cmd.append("--amend")
 
-        # Apply `--all` if given, otherwise get all files changed from isort/black output.
-        if "all" in commit:
-            cmd.append("--all")
-        else:
-            files = {line.split()[-1] for line in isort_lines + black_lines}
-            cmd.extend(files)
+        if commit_msg is not None:
+            # If no message given, use auto-commit behavior.
+            if commit_msg == "":
+                # If `amend` given, the commit already has a message, so just skip the editor.
+                if "amend" in commit:
+                    cmd.append("--no-edit")
+                # Otherwise, copy the previous commit's message.
+                else:
+                    cmd.append("--reuse-message=HEAD")
+            else:
+                cmd.append(f"--message={commit_msg}")
 
-        # Add commit message if given.
-        if commit_message:
-            cmd.extend(("--message", commit_message))
+        # If `all` given, commit all selected files. Otherwise, commit only formatted files.
+        if "all" in commit:
+            cmd.extend(files)
+        else:
+            formatted_files = {line.split()[-1] for line in isort_lines + black_lines}
+            cmd.extend(formatted_files)
 
         subprocess.run(cmd)
 
