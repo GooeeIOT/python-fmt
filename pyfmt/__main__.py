@@ -27,8 +27,7 @@ def main():
         envvar="BASE_CODE_DIR",
         default=".",
         metavar="PATH",
-        help="path to base directory where pyfmt will be run;"
-        " defaults to $BASE_CODE_DIR or the current directory",
+        help="path to base directory where pyfmt will be run",
     )
     parser.add_choices_argument(
         "-s",
@@ -47,8 +46,8 @@ def main():
         "--line-length",
         type=int,
         envvar="MAX_LINE_LENGTH",
-        default="100",
-        help="max characters per line; defaults to $MAX_LINE_LENGTH or 100",
+        default=100,
+        help="max characters per line",
     )
     parser.add_choices_argument(
         "--commit",
