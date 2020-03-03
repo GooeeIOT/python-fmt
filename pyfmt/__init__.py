@@ -105,11 +105,11 @@ def pyfmt(
 def run_formatter(cmd, path, **kwargs) -> Tuple[List[str], int]:
     """Helper to run a shell command and print prettified output."""
     cmd = shlex.split(" ".join(cmd).format(path=path, **kwargs))
-    result = subprocess.run(cmd, stdout=PIPE, stderr=PIPE, text=True)
+    result = subprocess.run(cmd, stdout=PIPE, stderr=PIPE)
 
     prefix = f"{cmd[0]}: "
     sep = "\n" + (" " * len(prefix))
-    lines = result.stderr.splitlines()
+    lines = result.stderr.decode().splitlines()
 
     # Remove fluff from black's output.
     if cmd[0] == "black" and result.returncode == 0:

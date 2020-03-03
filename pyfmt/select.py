@@ -1,5 +1,4 @@
 import subprocess
-from dataclasses import dataclass
 from typing import Iterator, Tuple
 
 __all__ = ["select_staged", "select_modified", "select_head", "select_local", "select_all"]
@@ -25,14 +24,16 @@ def select_all(path: str) -> Iterator[str]:
     return [path]
 
 
-@dataclass
 class GitStatusCode:
-    """Wrapper around the 2-character status codes returned by ``git status --porcelain``."""
+    """Wrapper around the 2-character status codes returned by ``git status --porcelain``.
 
-    # The first character, representing the file's status in the index.
-    index: str
-    # The second character, representing the file's status in the working tree.
-    work_tree: str
+    :param index: The first character, representing the file's status in the index.
+    :param work_tree: The second character, representing the file's status in the working tree.
+    """
+
+    def __init__(self, index: str, work_tree: str):
+        self.index = index
+        self.work_tree = work_tree
 
     def index_has_changes(self) -> bool:
         return self.index in "MARC"
@@ -74,4 +75,4 @@ def _iter_committed(path: str, commits: str) -> Iterator[str]:
 
 
 def _sh(*args: str) -> str:
-    return subprocess.run(args, stdout=subprocess.PIPE, text=True, check=True).stdout
+    return subprocess.run(args, stdout=subprocess.PIPE, check=True).stdout.decode()
