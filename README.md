@@ -49,6 +49,10 @@ https://jenkins.io/doc/book/pipeline/shared-libraries/ in the "Using Libraries" 
 *local/project packages). If you are not in your virtual env, the global Python environment will be
 *used which might place your local package imports in with the 3rd party package imports.
 
+Also FYI, `git` is not required to use `pyfmt`. However, it is required if you are using `--select`
+with anything other than `all` (the default), or if you are using `--commit` or `--commit-msg`,
+since these options are all reliant on the status of your git working tree and index.
+
 ```console
 usage: pyfmt [-h] [-x SELECT] [-c] [--line-length N]
              [--commit [ARG [ARG ...]]] [--commit-msg [MSG [MSG ...]]]
