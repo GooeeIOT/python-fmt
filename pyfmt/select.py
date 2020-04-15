@@ -7,17 +7,17 @@ __all__ = ["select_staged", "select_modified", "select_head", "select_local", "s
 
 
 def select_staged(paths: Iterable[str]) -> Iterator[str]:
-    return (file for code, file in _iter_changed(paths) if code.index_has_changes())
+    yield from (file for code, file in _iter_changed(paths) if code.index_has_changes())
 
 
 def select_modified(paths: Iterable[str]) -> Iterator[str]:
-    return (
+    yield from (
         file for code, file in _iter_changed(paths) if code.has_changes() or code.is_untracked()
     )
 
 
 def select_head(paths: Iterable[str]) -> Iterator[str]:
-    return _iter_committed(paths, "HEAD^1..HEAD")
+    yield from _iter_committed(paths, "HEAD^1..HEAD")
 
 
 def select_local(paths: Iterable[str]) -> Iterator[str]:
@@ -86,4 +86,6 @@ def _iter_committed(paths: Iterable[str], commits: str) -> Iterator[str]:
 
 
 def _sh(*args: str) -> str:
-    return subprocess.run(args, stdout=subprocess.PIPE, check=True).stdout.decode()
+    return subprocess.run(
+        args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True
+    ).stdout.decode()
