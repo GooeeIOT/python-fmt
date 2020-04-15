@@ -23,9 +23,9 @@ def main():
     parser = FormattedHelpArgumentParser(prog="pyfmt")
     parser.add_argument(
         "path",
-        nargs="?",
+        nargs="*",
         envvar="BASE_CODE_DIR",
-        default=".",
+        default=["."],
         metavar="PATH",
         help="path to base directory where pyfmt will be run",
     )

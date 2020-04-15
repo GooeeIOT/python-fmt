@@ -51,9 +51,9 @@ class GitStatusCode:
         return self.index == "R"
 
 
-def _iter_changed(path) -> Iterator[Tuple[GitStatusCode, str]]:
+def _iter_changed(paths: Iterable[str]) -> Iterator[Tuple[GitStatusCode, str]]:
     """Iterate over .py files in the index and working tree that aren't deleted."""
-    output = _sh("git", "status", "--porcelain", path)
+    output = _sh("git", "status", "--porcelain", *paths)
     for line in output.splitlines():
         xy, line = line[:2], line[2:].strip()
         code = GitStatusCode(*xy)
@@ -65,9 +65,9 @@ def _iter_changed(path) -> Iterator[Tuple[GitStatusCode, str]]:
             yield code, file
 
 
-def _iter_committed(path: str, commits: str) -> Iterator[str]:
+def _iter_committed(paths: Iterable[str], commits: str) -> Iterator[str]:
     """Iterate over .py files in the given commit ("x") or range ("x..y")."""
-    output = _sh("git", "--no-pager", "diff", "--numstat", commits, "--", path)
+    output = _sh("git", "--no-pager", "diff", "--numstat", commits, "--", *paths)
     for line in output.splitlines():
         file = line.strip().rsplit(maxsplit=1)[-1]
         if file.endswith(".py"):
